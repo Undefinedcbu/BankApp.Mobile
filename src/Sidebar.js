@@ -1,6 +1,6 @@
 //This is an example code for NavigationDrawer//
 import React, { Component } from 'react';
-import { View, Text,Image,Dimensions, TouchableOpacity,StyleSheet,Platform,ScrollView } from 'react-native';
+import { View, Text,Image,SafeAreaView,DrawerItems, TouchableOpacity,StyleSheet,Platform,ScrollView } from 'react-native';
 import {createAppContainer} from 'react-navigation';
 import {createDrawerNavigator} from 'react-navigation-drawer';
 import {createStackNavigator} from 'react-navigation-stack';
@@ -8,8 +8,8 @@ import Account from './Account';
 import Home from './Home';
 import Virman from './Virman'; 
 import Havale from './Havale'; 
-
-
+import FaturaIslemleri from './FaturaIslemleri'; 
+import Logout from './Logout';
 
 class NavigationDrawerStructure  extends Component {
   //Structure for the navigatin Drawer
@@ -17,10 +17,6 @@ class NavigationDrawerStructure  extends Component {
     //Props to open/close the drawer
     this.props.navigationProps.toggleDrawer();
   };
-
-
-
-
   constructor(props) {
 		super(props); 
      
@@ -29,7 +25,6 @@ class NavigationDrawerStructure  extends Component {
 		};
   }
   componentDidMount(){
-
   fetch('https://bankappapi.azurewebsites.net/api/Hesap?id=1',{
         method: 'GET',
         headers: {
@@ -133,12 +128,44 @@ const Screen4_StackNavigator = createStackNavigator({
   },
 });
 
+const Screen5_StackNavigator = createStackNavigator({
+  //All the screen from the Screen2 will be indexed here
+  Fifth: {
+    screen: FaturaIslemleri,
+    navigationOptions: ({ navigation }) => ({
+      title: 'Fatura Ödeme İşlemleri',
+      headerLeft: <NavigationDrawerStructure  navigationProps={navigation} />,
+      headerStyle: {
+        backgroundColor: '#e74c3c',
+      },
+      headerTintColor: '#fff',
+    }),
+  },
+});
+
+const Screen6_StackNavigator = createStackNavigator({
+  //All the screen from the Screen2 will be indexed here
+  Sixth: {
+    screen: Logout,
+    navigationOptions: ({ navigation }) => ({
+      title: 'Güvenli Çıkış',
+      headerLeft: <NavigationDrawerStructure  navigationProps={navigation} />,
+      headerStyle: {
+        backgroundColor: '#e74c3c',
+      },
+      headerTintColor: '#fff',
+    }),
+  },
+});
+
+
+
 const DrawerNavigatorExample = createDrawerNavigator({
   //Drawer Optons and indexing
   Home: {
     //Title
     screen: FirstActivity_StackNavigator,
-    navigationOptions: {
+    navigationOptions: {   
       drawerLabel: 'Ana Sayfa',
     },
   },
@@ -161,6 +188,20 @@ const DrawerNavigatorExample = createDrawerNavigator({
     screen: Screen4_StackNavigator,
     navigationOptions: {
       drawerLabel: 'Başka Hesaba Transfer(Havale)',
+    },
+  },
+  FaturaIslemleri: {
+    //Title
+    screen: Screen5_StackNavigator,
+    navigationOptions: {
+      drawerLabel: 'Fatura Ödeme İşlemleri',
+    },
+  },
+  Logout: {
+    //Title
+    screen: Screen6_StackNavigator,
+    navigationOptions: {
+      drawerLabel: 'Güvenli Çıkış',
     },
   },
 },{
