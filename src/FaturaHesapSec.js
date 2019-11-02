@@ -8,6 +8,7 @@ class FaturaHesap extends Component {
   constructor() {
     super();
     this.state = { 
+        Fatura:'',
         HesapNo:'',
         bakiye:'',
     };
@@ -26,7 +27,7 @@ render(){
            
               <TouchableOpacity style={styles.Style}>
                  <View >
-                   <Text value={this.state.bakiye} onChangeText={(value) => this.setState({bakiye: value})}
+                   <Text value={this.state.Fatura} onChangeText={(value) => this.setState({Fatura: value})}
                     style={{ fontSize: 18 }}>Faturanız : 50.000</Text>
                   </View>
               </TouchableOpacity>
