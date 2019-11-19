@@ -1,33 +1,50 @@
 import React, { Component} from 'react';
 import { Text,Button,TextInput, View ,Alert,TouchableOpacity,AsyncStorage,StyleSheet,Image } from 'react-native';
-import { createStackNavigator } from 'react-navigation-stack';
-import { createAppContainer } from 'react-navigation';
+
 
 class Miktar extends Component {
-    
-    constructor() {
-        super();
-        this.state = { 
-            bakiye:'',
-            Miktar:'',
-    
-    };
+    constructor(props){
+        super(props)
+        this.state={
+            Miktar:''
+        }
+    }
+transfer = (GondericiNo,AliciNo)=>{
+
+  
+    fetch('https://bankappapi.azurewebsites.net/api/Hesap/Havale?GonderenNo='+GondericiNo+'&AliciNo='+AliciNo+'&Miktar='+this.state.Miktar, 
+     { // extralar    
+     method: 'PUT',
+     headers: {
+       'Content-Type': 'text/html'
+     },    
+     })
+       .then((res) => res.json()) // gelen datayı parse ediyoruz
+       .then((res) => {
+           console.log("-->"+res)
+        if(res!=null)
+                Alert.alert("Para Başarılıylan Gitti")
+            })
+       .catch((error) => {     
+       console.log(error)
+       });
 }
+
     render(){      
+        const { navigate,getParam } = this.props.navigation;
         return(
            <View style={styles.container}>
-               <View style={styles.hesapbaslik} ><Text style={styles.Baslik}>Miktar</Text></View>
+               <View style={styles.hesapbaslik} ><Text style={styles.Baslik}>Gönderilebilecek Miktar</Text></View>
                <View style={styles.containerStyle}>
-                    <TouchableOpacity style={styles.subContainerStyle}>
+                    <View style={styles.subContainerStyle}>
                         <View >
-                            <Text value={this.state.bakiye} onChangeText={(value) => this.setState({bakiye: value})}
-                            style={{ fontSize: 18 }}>Bakiye:50.000</Text>
+                            <Text style={{ fontSize: 18 }}>{getParam('GonderilecekBakiye')}</Text>
                          
                         </View>
-                    </TouchableOpacity>
+                    </View>
                 </View>
 
-               <View style={styles.backcontainer}>
+                <View style={styles.backcontainer}>
                 <View style={styles.label} ><Text style={styles.labelbaslik} >Miktar:</Text></View>
                 <View style={styles.inputcontainer}>
                     <TextInput
@@ -40,7 +57,7 @@ class Miktar extends Component {
                 </View>
                 </View>
                 <View style={styles.button}>
-                    <Button onPress={() => Alert.alert('Transfer başarılı')}  
+                    <Button onPress={() => this.transfer(getParam('GondericiHesapNo'),getParam('HesapNo'))}  
                     color='#c0392b' 
                     style={styles.buttonHesapAc}  
                     title='Gönder'/>

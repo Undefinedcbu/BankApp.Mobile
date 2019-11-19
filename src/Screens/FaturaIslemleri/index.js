@@ -1,8 +1,7 @@
 import React, { Component} from 'react';
-import { Text,Button, View ,TextInput,AsyncStorage,TouchableOpacity,StyleSheet,Image } from 'react-native';
-import { createStackNavigator } from 'react-navigation-stack';
-import { createAppContainer } from 'react-navigation';
-import FaturaHesap from './FaturaHesapSec';
+import { Text,Button, View ,TextInput,AsyncStorage,TouchableOpacity,StyleSheet,Image, Alert } from 'react-native';
+
+//APİ https://bankappapi.azurewebsites.net/api/odeme/
 
 class FaturaIslemleri extends Component {
   constructor() {
@@ -11,7 +10,29 @@ class FaturaIslemleri extends Component {
         AboneNo: '',
     };
   }
-    render(){      
+  sorgula =()=>{
+    fetch('https://bankappapi.azurewebsites.net/api/Odeme?AboneNo='+this.state.AboneNo, 
+     { // extralar    
+     method: 'GET',
+     headers: {
+       'Content-Type': 'text/html'
+     },    
+     })
+       .then((res) => res.json()) // gelen datayı parse ediyoruz
+       .then((res) => {
+          if(res.Borc>0){
+            this.props.navigation.navigate('FaturaHesapSec',{AboneNo:this.state.AboneNo,Borc:res.Borc})
+          }
+          else
+            Alert.alert("Borcunuz bulunmamaktadır.")
+           
+        })
+      .catch((error) => {     
+        console.log(error)
+       });
+  }
+    render(){    
+      const {navigate} = this.props.navigation;  
         return(
            <View style={styles.container}>
              <View style={styles.hesapbaslik} ><Text style={styles.Baslik}>Fatura Öde</Text></View>
@@ -28,7 +49,7 @@ class FaturaIslemleri extends Component {
                   </View>                  
                 </View>
                 <View style={styles.button}>
-                    <Button onPress={() =>  this.props.navigation.navigate('FaturaHesap')}  
+                    <Button onPress={() => this.sorgula()}  
                     color='#c0392b' 
                     style={styles.buttonHesapAc}  
                     title='Sorgula'/>
@@ -88,15 +109,7 @@ button:{
 },
     
 })
-const mainNavigator=createStackNavigator({
-  FaturaIslemleri:{screen:FaturaIslemleri},
-  FaturaHesap:{screen:FaturaHesap},
 
-},{
-  headerMode:'none'
-}
-);
-const App=createAppContainer(mainNavigator)
-export default App;
+export default FaturaIslemleri
 
 

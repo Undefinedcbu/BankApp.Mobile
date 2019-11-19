@@ -1,17 +1,42 @@
 import React, { Component} from 'react';
-import { Text,Button, View ,TextInput,AsyncStorage,TouchableOpacity,StyleSheet,Image } from 'react-native';
-import { createStackNavigator } from 'react-navigation-stack';
-import { createAppContainer } from 'react-navigation';
-import GonHesap from './GonHesap';
+import { Text,Button, View ,TextInput,AsyncStorage,TouchableOpacity,StyleSheet,Image, Alert } from 'react-native';
+import { observer, inject } from 'mobx-react';
 
+@inject('AuthStore')
+@inject('AccountsStore')
+@observer
 class Havale extends Component {
   constructor() {
     super();
+    
     this.state = { 
         HesapNo: '',
     };
   }
-    render(){      
+kontrol = ()=>{
+  var flag=0
+  if(this.props.AccountsStore.allAccounts.length==this.props.AccountsStore.accounts.length  || this.props.AccountsStore.accounts.some(account=>account.HesapNo===this.state.HesapNo))
+  {
+    Alert.alert("Virman menüsüne gidiniz.")
+  }
+  else
+  {
+    for(let i=0;i<this.props.AccountsStore.allAccounts.length;i++){
+      console.log(this.props.AccountsStore.allAccounts[i].HesapNo)
+      if(this.props.AccountsStore.allAccounts[i].HesapNo == this.state.HesapNo)
+        flag=1;
+    }
+    if(flag==1)
+      this.props.navigation.navigate('GonHesap',{AliciHesapNo:this.state.HesapNo,Navigasyoner:'HavaleMiktar'})
+    else
+      Alert.alert("Böyle bir hesap bulunamadı...")
+  }
+}
+  
+
+    render(){
+      const { navigate } = this.props.navigation;
+      
         return(
            <View style={styles.container}>
              <View style={styles.hesapbaslik} ><Text style={styles.Baslik}>Alıcı Hesap</Text></View>
@@ -29,7 +54,7 @@ class Havale extends Component {
                   
                 </View>
                 <View style={styles.button}>
-                    <Button onPress={() => this.props.navigation.navigate('GonHesap')}  
+                    <Button onPress={()=>this.kontrol()}
                     color='#c0392b' 
                     style={styles.buttonHesapAc}  
                     title='Devam'/>
@@ -89,15 +114,7 @@ button:{
 },
     
 })
-const mainNavigator=createStackNavigator({
-  Havale:{screen:Havale},
-  GonHesap:{screen:GonHesap},
 
-},{
-  headerMode:'none'
-}
-);
-const App=createAppContainer(mainNavigator)
-export default App;
+export default Havale;
 
 

@@ -1,15 +1,12 @@
 import React, { Component} from 'react';
 import { Text,Button, View ,Alert,AsyncStorage,StyleSheet,Image } from 'react-native';
-import { createStackNavigator } from 'react-navigation-stack';
-import { createAppContainer } from 'react-navigation';
-import Login from './Login';
+import {inject} from 'mobx-react';
 
-
+@inject('AuthStore')
 class Logout extends Component {
 
     Cıkıs ()  {
-       
-        this.props.navigation.navigate('Login')
+        this.props.AuthStore.removeID()
     }
      Hayır(){
         this.props.navigation.navigate('Home')

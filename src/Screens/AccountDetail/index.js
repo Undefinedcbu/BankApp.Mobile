@@ -2,19 +2,44 @@ import React, { Component} from 'react';
 import { Text,Button,Alert, View ,StyleSheet,Image } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 
-class HesapDetay extends Component {
-    constructor() {
-        super();
-        this.state = { 
-            HesapNo: '',
-            Bakiye:'',
-            Tarih:'',
-    
-    };
-}
+class AccountDetail extends Component {
+    constructor(props) {
+        super(props);
+        
+    }
+
+    closeAccount(HesapID,Bakiye){
+        if(Bakiye>0)
+        {
+            Alert.alert("Hesabınızda para varken kapatma işlemi yapamazsınız.")
+        }
+        else{
+            fetch('https://bankappapi.azurewebsites.net/api/Hesap/Kapat?id='+HesapID, 
+            { // extralar    
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'text/html'
+            },    
+            })
+              .then((res) => res.json()) // gelen datayı parse ediyoruz
+              .then((res) => {
+                   if(res.Durum=="Kapalı")
+                   {
+                       this.props.navigation.goBack();
+                   }
+              })
+              .catch((error) => {     
+              console.log(error)
+              });
+          };
+        }
+        
+
     render(){
+        const { getParam } = this.props.navigation;
         return(
             <View style={styles.container}>
+                
                 <View style={styles.hesapdetay}>
                     <View style={styles.hesapbaslik}>
                         <Text style={styles.Baslik} >Hesap Bilgileriniz</Text>
@@ -22,26 +47,17 @@ class HesapDetay extends Component {
                     <View style={styles.hesapbilgiler}>
                         <View style={styles.row}>
                             <Text style={styles.detay} >Hesap Numarası: </Text>
-                            <Text style={styles.detay} 
-                            value={this.state.HesapNo}
-                            onChangeText={(value) => this.setState({HesapNo: value})}>165-12569874-5001 </Text>
+                            <Text style={styles.detay} >{getParam('HesapNo')}</Text>
                         </View>
                         <View style={styles.row}>
                             <Text style={styles.detay} >Bakiye </Text>
-                            <Text style={styles.detay} 
-                            value={this.state.Bakiye}
-                            onChangeText={(value) => this.setState({Bakiye: value})}>100.000,00 </Text>
+                            <Text style={styles.detay}>{getParam('Bakiye')}</Text>
                         </View>
-                        <View style={styles.row}>
-                            <Text style={styles.detay} >Hesap Açılış Tarihi </Text>
-                            <Text style={styles.detay} 
-                             value={this.state.Tarih}
-                             onChangeText={(value) => this.setState({Tarih: value})}>03/08/2019 </Text>
-                        </View>
+                        
                     </View>
               </View>     
               <View style={styles.button}>
-                    <Button onPress={() => Alert.alert('Hesabınız başarıyla kapatıldı.')} 
+                    <Button onPress={()=>this.closeAccount(getParam('HesapID'),getParam('Bakiye'))} 
                     color='#c0392b' 
                     style={styles.buttonHesapAc} title='Kapat'/>
               </View>    
@@ -91,4 +107,4 @@ const styles=StyleSheet.create({
     }
 })
 
-export default HesapDetay;
+export default AccountDetail;
